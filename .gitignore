@@ -8,6 +8,6 @@ node_modules
 cdk.out
 
 .DS_Store
-.idea
+#.idea
 
 cdk.context.json
