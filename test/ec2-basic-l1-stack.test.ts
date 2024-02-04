@@ -1,8 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
 import {Template} from "aws-cdk-lib/assertions";
 import {Ec2BasicL1Stack} from "../lib/ec2-basic-l1-stack";
+import {Stack} from "aws-cdk-lib/core/lib/stack";
 
-let app: cdk.App, stack: Ec2BasicL1Stack, template: Template;
+let app: cdk.App, stack: Stack, template: Template;
 
 beforeAll(() => {
     app = new cdk.App();
@@ -34,6 +35,12 @@ describe('SecurityGroup tests', () => {
             SecurityGroupEgress: [{
                 CidrIp: '0.0.0.0/0',
                 IpProtocol: '-1'
+            }],
+            SecurityGroupIngress: [{
+                CidrIp: '0.0.0.0/0',
+                IpProtocol: 'tcp',
+                FromPort: 80,
+                ToPort: 80
             }]
         })
     });
