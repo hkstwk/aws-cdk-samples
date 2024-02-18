@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1708253421721" clover="3.2.0">
+  <project timestamp="1708253421721" name="All files">
+    <metrics statements="19" coveredstatements="19" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2" elements="21" coveredelements="21" complexity="0" loc="19" ncloc="19" packages="1" files="2" classes="2"/>
+    <file name="ec2-basic-l1-stack.ts" path="/Users/harm/WebstormProjects/aws-cdk-samples/lib/ec2-basic-l1-stack.ts">
+      <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <line num="1" count="2" type="stmt"/>
+      <line num="3" count="2" type="stmt"/>
+      <line num="4" count="2" type="stmt"/>
+      <line num="6" count="2" type="stmt"/>
+      <line num="8" count="2" type="stmt"/>
+      <line num="11" count="2" type="stmt"/>
+      <line num="14" count="2" type="stmt"/>
+      <line num="20" count="2" type="stmt"/>
+      <line num="23" count="2" type="stmt"/>
+      <line num="30" count="2" type="stmt"/>
+    </file>
+    <file name="ec2-basic-l2-stack.ts" path="/Users/harm/WebstormProjects/aws-cdk-samples/lib/ec2-basic-l2-stack.ts">
+      <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <line num="1" count="2" type="stmt"/>
+      <line num="3" count="2" type="stmt"/>
+      <line num="4" count="2" type="stmt"/>
+      <line num="6" count="2" type="stmt"/>
+      <line num="8" count="2" type="stmt"/>
+      <line num="11" count="2" type="stmt"/>
+      <line num="14" count="2" type="stmt"/>
+      <line num="19" count="2" type="stmt"/>
+      <line num="22" count="2" type="stmt"/>
+    </file>
+  </project>
+</coverage>
