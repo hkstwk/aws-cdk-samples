@@ -11,3 +11,5 @@ cdk.out
 .idea/
 
 cdk.context.json
+
+coverage/*
