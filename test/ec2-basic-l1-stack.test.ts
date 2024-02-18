@@ -27,7 +27,7 @@ describe('Resource count tests', () => {
 })
 
 describe('SecurityGroup tests', () => {
-    it('should have correct groupname', () => {
+    it('should have correct group name', () => {
         template.hasResourceProperties('AWS::EC2::SecurityGroup', {GroupName: 'ec2-basic-sg-l1'})
     });
     it('should have correct outbound rules', () => {

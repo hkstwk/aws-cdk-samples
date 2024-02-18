@@ -21,7 +21,7 @@ describe('Resource count tests', () => {
     it('should have one SecurityGroup', () => {
         template.resourceCountIs('AWS::EC2::SecurityGroup', 1)
     })
-    it('shoud have one EC2 Instance', () => {
+    it('should have one EC2 Instance', () => {
         template.resourceCountIs('AWS::EC2::Instance', 1)
     })
     it('should have one IAM role', () => {
@@ -36,7 +36,7 @@ describe('Resource count tests', () => {
 })
 
 describe('SecurityGroup tests', () => {
-    it('should have correct groupname', () => {
+    it('should have correct group name', () => {
         template.hasResourceProperties('AWS::EC2::SecurityGroup', {GroupName: 'ec2-basic-sg-l2'})
     });
     it('should have correct inbound and outbound rules', () => {
