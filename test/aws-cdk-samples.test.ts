@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
-import {Ec2BasicL1Stack} from "../lib/ec2-basic-l1-stack";
-import {Ec2BasicL2Stack} from "../lib/ec2-basic-l2-stack";
+import {Ec2BasicL1Stack} from "../lib/provisioned/ec2-basic-l1-stack";
+import {Ec2BasicL2Stack} from "../lib/provisioned/ec2-basic-l2-stack";
 
 const props = {
     env: {

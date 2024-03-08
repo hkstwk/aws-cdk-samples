@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import {Template, Match} from 'aws-cdk-lib/assertions';
-import {Ec2BasicL2Stack} from "../lib/ec2-basic-l2-stack";
+import {Ec2BasicL2Stack} from "../lib/provisioned/ec2-basic-l2-stack";
 import {Stack} from "aws-cdk-lib/core/lib/stack";
 
 let app: cdk.App, stack: Stack, template: Template;
