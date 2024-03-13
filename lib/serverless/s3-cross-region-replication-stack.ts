@@ -2,6 +2,8 @@ import * as cdk from 'aws-cdk-lib';
 import {Duration, RemovalPolicy} from 'aws-cdk-lib';
 import {BlockPublicAccess, Bucket, BucketEncryption, ObjectOwnership} from 'aws-cdk-lib/aws-s3';
 import {Construct} from 'constructs';
+import {NodejsFunction} from "aws-cdk-lib/aws-lambda-nodejs";
+import {Runtime} from "aws-cdk-lib/aws-lambda";
 
 export class S3CrossRegionReplicationStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -35,6 +37,13 @@ export class S3CrossRegionReplicationStack extends cdk.Stack {
             }]
         });
 
+        const zipHandler = new NodejsFunction(this, 'zip-handler', {
+            runtime: Runtime.NODEJS_20_X,
+            environment: {
+                bucketName: targetBucket.bucketName
+            }
+        });
 
+        targetBucket.grantReadWrite(zipHandler);
     }
 }
