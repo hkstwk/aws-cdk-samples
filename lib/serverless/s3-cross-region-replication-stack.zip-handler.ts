@@ -6,7 +6,9 @@ const s3 = new S3();
 
 export const handler = async (event: any, context: any): Promise<void> => {
     const bucketName = process.env.bucketName || 'noname';
-    const zipFileName = 'output.zip';
+    const dateTime = new Date().toISOString().replace(/[-T:]/g, '').split('.')[0]; // Format: YYYYMMDDHHMMSS
+    const zipFileName = `output_${dateTime}.zip`;
+
 
     const archive = archiver('zip', {
         zlib: { level: 9 }, // Compression level (0-9)
