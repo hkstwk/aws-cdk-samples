@@ -39,6 +39,7 @@ export class S3CrossRegionReplicationStack extends cdk.Stack {
 
         const zipHandler = new NodejsFunction(this, 'zip-handler', {
             runtime: Runtime.NODEJS_20_X,
+            timeout: Duration.seconds(300),
             environment: {
                 bucketName: targetBucket.bucketName
             }
