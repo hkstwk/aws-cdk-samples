@@ -38,7 +38,7 @@ async function listAndAddFilesToArchive(bucketName: string, archive: any): Promi
     // @ts-ignore
     for (const content of listObjectsV2Output.Contents) {
         // Skip directories or other objects if needed
-
+        if (!content.Key) continue;
 
         // Create a stream for each S3 object
         const s3ObjectStream = s3.getObject({ Bucket: bucketName, Key: content.Key }).createReadStream();
