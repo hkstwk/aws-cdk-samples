@@ -34,23 +34,6 @@ export class S3ReplicationStack extends cdk.Stack {
             }]
         });
 
-        // Add bucket policy to allow replication
-        targetBucket.addToResourcePolicy(new iam.PolicyStatement({
-            actions: [
-                's3:GetReplicationConfiguration',
-                's3:ListBucket',
-                's3:GetObjectVersion',
-                's3:GetObject',
-                's3:ReplicateObject'
-            ],
-            resources: [
-                targetBucket.bucketArn,
-                `${targetBucket.bucketArn}/*`
-            ],
-            principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
-            effect: iam.Effect.ALLOW
-        }));
-
         // Create Lambda function
         const zipHandler = new NodejsFunction(this, 'zip-handler', {
             runtime: Runtime.NODEJS_20_X,
@@ -64,27 +47,35 @@ export class S3ReplicationStack extends cdk.Stack {
 
         // Define IAM role for replication
         const replicationRole = new iam.Role(this, 'ReplicationRole', {
-            assumedBy: new iam.ServicePrincipal('s3.amazonaws.com')
+            assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
         });
+
+        replicationRole.addToPolicy(new iam.PolicyStatement({
+            actions: [
+                "s3:GetReplicationConfiguration",
+                "s3:ListBucket"
+            ],
+            resources: [sourceBucket.attrArn]
+        }));
 
         // Attach policy for reading from the source bucket
         replicationRole.addToPolicy(new iam.PolicyStatement({
             actions: [
-                's3:GetObjectVersion',
-                's3:GetObject',
-                's3:ListBucket'
+                "s3:GetObjectVersionForReplication",
+                "s3:GetObjectVersionAcl",
+                "s3:GetObjectVersionTagging"
             ],
             resources: [
-                `${targetBucket.bucketArn}/*`,
-                targetBucket.bucketArn
+                `${sourceBucket.attrArn}/*`,
             ]
         }));
 
-        // Attach policy for writing to the destination bucket
+        // Attach policy for destination bucket
         replicationRole.addToPolicy(new iam.PolicyStatement({
             actions: [
-                's3:PutObject',
-                's3:ReplicateObject'
+                "s3:ReplicateObject",
+                "s3:ReplicateDelete",
+                "s3:ReplicateTags"
             ],
             resources: [
                 `${targetBucket.bucketArn}/*`
