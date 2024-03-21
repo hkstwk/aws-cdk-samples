@@ -11,11 +11,27 @@ export class S3ReplicationStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        // Apply replication configuration to the source bucket
+        // create source bucket
         const sourceBucket = new s3.CfnBucket(this, 'sourceBucket', {
-            accessControl: 'Private',
             versioningConfiguration: {
                 status: 'Enabled'
+            },
+            ownershipControls: {
+                rules: [{objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED}]
+            },
+            bucketEncryption: {
+                serverSideEncryptionConfiguration: [{
+                    bucketKeyEnabled: false,
+                    serverSideEncryptionByDefault: {
+                        sseAlgorithm: "AES256"
+                    },
+                }]
+            },
+            lifecycleConfiguration: {
+                rules: [{
+                    status: 'Enabled',
+                    expirationInDays: 7
+                }]
             }
         });
 
