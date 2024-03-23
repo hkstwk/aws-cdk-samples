@@ -1,6 +1,6 @@
 import {S3} from 'aws-sdk';
-import {tagObject} from "./utils/tag-object";
-import {TagKeyEnum, ZipStatusEnum} from "./utils/enums";
+import {tagObject} from "../utils/tag-object";
+import {TagKeyEnum, ZipStatusEnum} from "../utils/enums";
 
 import archiver = require('archiver');
 import stream = require('stream');
@@ -34,9 +34,10 @@ export const handler = async (event: any, context: any): Promise<void> => {
         continuationToken = listObjectsV2Output.NextContinuationToken;
     } while (continuationToken);
 
+    const fileCount = allFiles.length;
     let processedFiles = 0;
 
-    while (processedFiles < allFiles.length) {
+    while (processedFiles < allFiles.length && fileCount > 0) {
         const batchFiles = allFiles.slice(processedFiles, processedFiles + batchSize);
         const zipFileName = `output_${dateTime}_batch_${Math.ceil((processedFiles + 1) / batchSize)}.zip`;
 
@@ -54,7 +55,9 @@ export const handler = async (event: any, context: any): Promise<void> => {
 
         // Add files to the archive
         await addFilesToArchive(bucketName, archive, batchFiles, (size: number) => {
+            console.info('size: ', size);
             totalSizeProcessed += size;
+            console.info('totalSizeProcessed: ', totalSizeProcessed);
         });
 
         // Finalize the archiver to complete the zip file
@@ -73,7 +76,8 @@ export const handler = async (event: any, context: any): Promise<void> => {
     }
 
     // End the Lambda function
-    context.succeed('Zip creation and upload successful');
+    const response = fileCount > 0 ?  'Zip file(s) created' : 'No files to zip...'
+    context.succeed(response);
 };
 
 async function getObjectTags(bucketName: string, key: string): Promise<any[]> {
@@ -87,10 +91,12 @@ async function addFilesToArchive(bucketName: string, archive: any, files: any[],
         const s3ObjectStream = s3.getObject({ Bucket: bucketName, Key: content.Key }).createReadStream();
 
         // Track the size of each file
-        let fileSize = 0;
+        let fileSize: number = 0;
         s3ObjectStream.on('data', (chunk: any) => {
-            fileSize += chunk.length;
+            fileSize += Number(chunk.length);
+            console.info('chunck.length: ', chunk.length);
         });
+        console.info('fileSize: ', fileSize);
 
         // Add the stream to the archiver with the appropriate file name
         archive.append(s3ObjectStream, { name: content.Key });

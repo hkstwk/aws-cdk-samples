@@ -6,6 +6,7 @@ import {BlockPublicAccess, BucketEncryption, ObjectOwnership} from 'aws-cdk-lib/
 import {Construct} from 'constructs';
 import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
 import {Runtime} from 'aws-cdk-lib/aws-lambda';
+import * as path from 'path';
 
 export class S3ReplicationStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -51,9 +52,13 @@ export class S3ReplicationStack extends cdk.Stack {
             }]
         });
 
+        console.log(process.cwd());
+        console.log(path.join(process.cwd(),'lib/serverless/lambdas', 'zip-handler.ts'));
+
         // Create Lambda function
         const zipHandler = new NodejsFunction(this, 'zip-handler', {
             runtime: Runtime.NODEJS_20_X,
+            entry: path.join(process.cwd(),'lib/serverless/lambdas', 'zip-handler.ts'),
             timeout: Duration.seconds(300),
             memorySize: 1024,
             environment: {

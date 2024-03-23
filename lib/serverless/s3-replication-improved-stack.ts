@@ -2,8 +2,11 @@ import * as cdk from 'aws-cdk-lib';
 import {Duration, RemovalPolicy} from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
+import {Runtime} from 'aws-cdk-lib/aws-lambda';
 import {BlockPublicAccess, BucketEncryption, ObjectOwnership} from 'aws-cdk-lib/aws-s3';
 import {Construct} from 'constructs';
+import * as path from 'path';
 
 export class S3ReplicationImprovedStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -89,6 +92,20 @@ export class S3ReplicationImprovedStack extends cdk.Stack {
                 }
             ]
         };
+
+        console.log(process.cwd());
+        console.log(path.join(process.cwd(),'lib/serverless/lambdas', 'zip-handler.ts'));
+
+        const zipHandler = new NodejsFunction(this, 'zip-handler', {
+            runtime: Runtime.NODEJS_20_X,
+            entry: path.join(process.cwd(),'lib/serverless/lambdas', 'zip-handler.ts'),
+            timeout: Duration.seconds(300),
+            memorySize: 1024,
+            environment: {
+                bucketName: targetBucket.bucketName
+            }
+        });
+        targetBucket.grantReadWrite(zipHandler);
 
     }
 }
