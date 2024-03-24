@@ -79,8 +79,10 @@ export class S3ReplicationImprovedStack extends cdk.Stack {
             ]
         }));
 
-        // Create replication rule configuration
+        // Create replication rule configuration on source bucket by using escape hatch for L2 construct
+        // https://docs.aws.amazon.com/cdk/v2/guide/cfn_layer.html#develop-customize-escape
         const cfnBucket = sourceBucket.node.defaultChild as s3.CfnBucket;
+        console.info('Cloud formation resource: ', cfnBucket.replicationConfiguration);
         cfnBucket.replicationConfiguration = {
             role: replicationRole.roleArn,
             rules: [
@@ -92,7 +94,9 @@ export class S3ReplicationImprovedStack extends cdk.Stack {
                 }
             ]
         };
+        console.info('Cloud formation resource: ', cfnBucket.replicationConfiguration);
 
+        // Add zipHandler lambda from path other than current directory
         console.log(process.cwd());
         console.log(path.join(process.cwd(),'lib/serverless/lambdas', 'zip-handler.ts'));
 
