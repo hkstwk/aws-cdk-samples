@@ -36,7 +36,6 @@ export class S3ReplicationStack extends cdk.Stack {
             }
         });
 
-
         // Create target bucket
         const targetBucket = new s3.Bucket(this, 'targetBucket', {
             blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
@@ -51,21 +50,6 @@ export class S3ReplicationStack extends cdk.Stack {
                 id: 'expirationLifeCycleRule',
             }]
         });
-
-        console.log(process.cwd());
-        console.log(path.join(process.cwd(),'lib/serverless/lambdas', 'zip-handler.ts'));
-
-        // Create Lambda function
-        const zipHandler = new NodejsFunction(this, 'zip-handler', {
-            runtime: Runtime.NODEJS_20_X,
-            entry: path.join(process.cwd(),'lib/serverless/lambdas', 'zip-handler.ts'),
-            timeout: Duration.seconds(300),
-            memorySize: 1024,
-            environment: {
-                bucketName: targetBucket.bucketName
-            }
-        });
-        targetBucket.grantReadWrite(zipHandler);
 
         // Define IAM role for replication
         const replicationRole = new iam.Role(this, 'ReplicationRole', {

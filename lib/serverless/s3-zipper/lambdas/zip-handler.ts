@@ -1,6 +1,6 @@
 import {S3} from 'aws-sdk';
-import {tagObject} from "../utils/tag-object";
-import {TagKeyEnum, ZipStatusEnum} from "../utils/enums";
+import {tagObject} from "../../utils/tag-object";
+import {TagKeyEnum, ZipStatusEnum} from "../../utils/enums";
 
 import archiver = require('archiver');
 import stream = require('stream');
