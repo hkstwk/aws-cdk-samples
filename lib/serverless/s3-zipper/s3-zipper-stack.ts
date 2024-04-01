@@ -20,7 +20,7 @@ export class S3ZipperStack extends cdk.Stack {
             autoDeleteObjects: true,
             objectOwnership: ObjectOwnership.BUCKET_OWNER_ENFORCED,
             lifecycleRules: [{
-                expiration: Duration.days(1),
+                expiration: Duration.days(7),
                 id: 'expirationLifeCycleRule',
             }]
         });

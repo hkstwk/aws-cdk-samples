@@ -1,11 +1,12 @@
 import * as cdk from 'aws-cdk-lib';
-import {Duration, RemovalPolicy} from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import {BlockPublicAccess, BucketEncryption, ObjectOwnership} from 'aws-cdk-lib/aws-s3';
 import {Construct} from 'constructs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import {Duration, RemovalPolicy} from 'aws-cdk-lib';
+import {BlockPublicAccess, BucketEncryption, ObjectOwnership} from 'aws-cdk-lib/aws-s3';
+import {constants} from "../utils/constants";
 
-export class S3ReplicationImprovedStack extends cdk.Stack {
+export class S3InventoryStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
@@ -19,7 +20,7 @@ export class S3ReplicationImprovedStack extends cdk.Stack {
             autoDeleteObjects: true,
             objectOwnership: ObjectOwnership.BUCKET_OWNER_ENFORCED,
             lifecycleRules: [{
-                expiration: Duration.days(7),
+                expiration: Duration.days(constants.EXPIRATION_DAYS),
                 id: 'expirationLifeCycleRule',
             }]
         });
@@ -34,7 +35,22 @@ export class S3ReplicationImprovedStack extends cdk.Stack {
             autoDeleteObjects: true,
             objectOwnership: ObjectOwnership.BUCKET_OWNER_ENFORCED,
             lifecycleRules: [{
-                expiration: Duration.days(7),
+                expiration: Duration.days(constants.EXPIRATION_DAYS),
+                id: 'expirationLifeCycleRule',
+            }]
+        });
+
+        // Create inventory bucket
+        const inventoryBucket = new s3.Bucket(this, 'inventoryBucket', {
+            blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+            encryption: BucketEncryption.S3_MANAGED,
+            versioned: true,
+            removalPolicy: RemovalPolicy.DESTROY,
+            enforceSSL: true,
+            autoDeleteObjects: true,
+            objectOwnership: ObjectOwnership.BUCKET_OWNER_ENFORCED,
+            lifecycleRules: [{
+                expiration: Duration.days(constants.EXPIRATION_DAYS * 2),
                 id: 'expirationLifeCycleRule',
             }]
         });
@@ -92,5 +108,45 @@ export class S3ReplicationImprovedStack extends cdk.Stack {
             ]
         };
         console.info('Cloud formation resource: ', cfnBucket.replicationConfiguration);
+
+        // See official CloudFormation docs for enum values
+        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-inventoryconfiguration.html
+        // Properties->OptionalFields
+        const optionalFieldsArray: string[] = [
+            'IsMultipartUploaded',
+            'BucketKeyStatus',
+            'ObjectAccessControlList',
+            'ObjectOwner',
+            'ChecksumAlgorithm',
+            'ETag',
+            'Size',
+            'StorageClass',
+            'LastModifiedDate',
+            'ReplicationStatus',
+            'EncryptionStatus',
+            'ObjectLockRetainUntilDate',
+            'ObjectLockMode',
+            'ObjectLockLegalHoldStatus',
+            'IntelligentTieringAccessTier',
+        ];
+
+        sourceBucket.addInventory({
+            inventoryId: 'sourceInventory',
+            format: s3.InventoryFormat.PARQUET,
+            optionalFields: optionalFieldsArray,
+            destination: {bucket: inventoryBucket},
+            frequency: s3.InventoryFrequency.DAILY,
+            includeObjectVersions: s3.InventoryObjectVersion.CURRENT
+        })
+
+        targetBucket.addInventory({
+            inventoryId: 'targetInventory',
+            format: s3.InventoryFormat.PARQUET,
+            optionalFields: optionalFieldsArray,
+            destination: {bucket: inventoryBucket},
+            frequency: s3.InventoryFrequency.DAILY,
+            includeObjectVersions: s3.InventoryObjectVersion.CURRENT
+        })
     }
+
 }
